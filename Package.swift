@@ -51,9 +51,14 @@ let package = Package(
             dependencies: ["GRDBSQLite"],
             path: "GRDB",
             resources: [.copy("PrivacyInfo.xcprivacy")],
-            cSettings: cSettings,
-            swiftSettings: swiftSettings),
-        .testTarget(
+			cSettings: [
+				.define("GRDB_SQLITE_ENABLE_PREUPDATE_HOOK")
+			],
+			swiftSettings: [
+				.define("SQLITE_ENABLE_FTS5"),
+				.define("SQLITE_ENABLE_PREUPDATE_HOOK")
+			]),
+		.testTarget(
             name: "GRDBTests",
             dependencies: ["GRDB"],
             path: "Tests",
