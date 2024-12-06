@@ -27,8 +27,8 @@ try db.create(table: "player") { t in
 > Tip: When an application performs queries on values embedded inside JSON columns, indexes can help performance:
 >
 > ```swift
-> // CREATE INDEX "player_on_country" 
-> // ON "player"("address" ->> 'country')
+> // CREATE INDEX player_on_country 
+> // ON player(address ->> 'country')
 > try db.create(
 >     index: "player_on_country",
 >     on: "player",
@@ -37,7 +37,7 @@ try db.create(table: "player") { t in
 >     ])
 >
 > // SELECT * FROM player
-> // WHERE "address" ->> 'country' = 'DE'
+> // WHERE address ->> 'country' = 'DE'
 > let germanPlayers = try Player
 >     .filter(JSONColumn("address")["country"] == "DE")
 >     .fetchAll(db)
@@ -97,6 +97,21 @@ extension Team: FetchableRecord, PersistableRecord {
     }
 }
 ```
+
+> Tip: Conform your `Codable` property to `DatabaseValueConvertible` if you want to be able to filter on specific values of it:
+>
+> ```swift
+> struct Address: Codable { ... }
+> extension Address: DatabaseValueConvertible {}
+>
+> // SELECT * FROM player
+> // WHERE address = '{"street": "...", "city": "...", "country": "..."}'
+> let players = try Player
+>     .filter(JSONColumn("address") == Address(...))
+>     .fetchAll(db)
+> ```
+>
+> Take care that SQLite will compare strings, not JSON objects: white-space and key ordering matter. For this comparison to succeed, make sure that the database contains values that are formatted exactly like a serialized `Address`.
 
 ## Manipulate JSON values at the database level
 
