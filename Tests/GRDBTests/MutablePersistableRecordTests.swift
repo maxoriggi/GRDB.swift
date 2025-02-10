@@ -1249,7 +1249,7 @@ class MutablePersistableRecordTests: GRDBTestCase {
 extension MutablePersistableRecordTests {
     func test_insertAndFetch() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -1270,7 +1270,7 @@ extension MutablePersistableRecordTests {
     
     func test_insertAndFetch_as() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -1320,7 +1320,7 @@ extension MutablePersistableRecordTests {
     
     func test_insertAndFetch_selection_fetch() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -1411,7 +1411,7 @@ extension MutablePersistableRecordTests {
 extension MutablePersistableRecordTests {
     func test_saveAndFetch() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -1432,7 +1432,7 @@ extension MutablePersistableRecordTests {
     
     func test_saveAndFetch_as() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -1558,7 +1558,7 @@ extension MutablePersistableRecordTests {
     
     func test_saveAndFetch_selection_fetch() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -1688,7 +1688,7 @@ extension MutablePersistableRecordTests {
 extension MutablePersistableRecordTests {
     func test_updateAndFetch() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -1739,7 +1739,7 @@ extension MutablePersistableRecordTests {
     
     func test_updateAndFetch_as() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -1789,7 +1789,7 @@ extension MutablePersistableRecordTests {
     
     func test_updateAndFetch_selection_fetch() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -1802,7 +1802,7 @@ extension MutablePersistableRecordTests {
         try dbQueue.inDatabase { db in
             var player = FullPlayer(id: 1, name: "Arthur", score: 1000)
             do {
-                _ = try player.updateAndFetch(db, selection: [AllColumns()]) { statement in
+                _ = try player.updateAndFetch(db, selection: [.allColumns]) { statement in
                     try Row.fetchOne(statement)
                 }
                 XCTFail("Expected RecordError")
@@ -1813,7 +1813,7 @@ extension MutablePersistableRecordTests {
             player.score = 0
 
             do {
-                let row = try player.updateAndFetch(db, selection: [AllColumns()]) { statement in
+                let row = try player.updateAndFetch(db, selection: [.allColumns]) { statement in
                     try Row.fetchOne(statement)
                 }
                 XCTAssertEqual(row, ["id": 1, "name": "Barbara", "score": 0])
@@ -1843,7 +1843,7 @@ extension MutablePersistableRecordTests {
     
     func test_updateAndFetch_columns_selection_fetch() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -1856,7 +1856,7 @@ extension MutablePersistableRecordTests {
         try dbQueue.inDatabase { db in
             var player = FullPlayer(id: 1, name: "Arthur", score: 1000)
             do {
-                _ = try player.updateAndFetch(db, columns: [Column("score")], selection: [AllColumns()]) { statement in
+                _ = try player.updateAndFetch(db, columns: [Column("score")], selection: [.allColumns]) { statement in
                     try Row.fetchOne(statement)
                 }
                 XCTFail("Expected RecordError")
@@ -1867,7 +1867,7 @@ extension MutablePersistableRecordTests {
             player.score = 0
 
             do {
-                let row = try player.updateAndFetch(db, columns: [Column("score")], selection: [AllColumns()]) { statement in
+                let row = try player.updateAndFetch(db, columns: [Column("score")], selection: [.allColumns]) { statement in
                     try Row.fetchOne(statement)
                 }
                 XCTAssertEqual(row, ["id": 1, "name": "Arthur", "score": 0])
@@ -1897,7 +1897,7 @@ extension MutablePersistableRecordTests {
     
     func test_updateChangesAndFetch_modify() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -1958,7 +1958,7 @@ extension MutablePersistableRecordTests {
     
     func test_updateChangesAndFetch_as_modify() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -2018,7 +2018,7 @@ extension MutablePersistableRecordTests {
     
     func test_updateChangesAndFetch_selection_fetch_modify() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -2032,7 +2032,7 @@ extension MutablePersistableRecordTests {
             var player = FullPlayer(id: 1, name: "Arthur", score: 1000)
             do {
                 _ = try player.updateChangesAndFetch(
-                    db, selection: [AllColumns()],
+                    db, selection: [.allColumns],
                     fetch: { statement in try Row.fetchOne(statement) },
                     modify: { $0.name = "Barbara" })
                 XCTFail("Expected RecordError")
@@ -2043,7 +2043,7 @@ extension MutablePersistableRecordTests {
             do {
                 // Update with no change
                 let update = try player.updateChangesAndFetch(
-                    db, selection: [AllColumns()],
+                    db, selection: [.allColumns],
                     fetch: { statement in
                         XCTFail("Should not be called")
                         return "ignored"
@@ -2054,7 +2054,7 @@ extension MutablePersistableRecordTests {
             
             do {
                 let updatedRow = try player.updateChangesAndFetch(
-                    db, selection: [AllColumns()],
+                    db, selection: [.allColumns],
                     fetch: { statement in try Row.fetchOne(statement) },
                     modify: { $0.name = "Craig" })
                 XCTAssertEqual(updatedRow, ["id": 1, "name": "Craig", "score": 1000])
@@ -2088,7 +2088,7 @@ extension MutablePersistableRecordTests {
 extension MutablePersistableRecordTests {
     func test_upsert() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("UPSERT is not available")
         }
 #else
@@ -2237,7 +2237,7 @@ extension MutablePersistableRecordTests {
 
     func test_upsertAndFetch_do_update_set_where() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("UPSERT is not available")
         }
 #else
@@ -2393,7 +2393,7 @@ extension MutablePersistableRecordTests {
     
     func test_upsertAndFetch() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("UPSERT is not available")
         }
 #else
@@ -2496,7 +2496,7 @@ extension MutablePersistableRecordTests {
 
     func test_upsertAndFetch_as() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("UPSERT is not available")
         }
 #else

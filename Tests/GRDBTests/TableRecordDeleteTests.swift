@@ -227,7 +227,7 @@ class TableRecordDeleteTests: GRDBTestCase {
     
     func testRequestDeleteAndFetchStatement() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -238,16 +238,30 @@ class TableRecordDeleteTests: GRDBTestCase {
         
         let dbQueue = try makeDatabaseQueue()
         try dbQueue.inDatabase { db in
-            let request = Person.all()
-            let statement = try request.deleteAndFetchStatement(db, selection: [AllColumns()])
-            XCTAssertEqual(statement.sql, "DELETE FROM \"persons\" RETURNING *")
-            XCTAssertEqual(statement.columnNames, ["id", "name", "email"])
+            do {
+                let request = Person.all()
+                let statement = try request.deleteAndFetchStatement(db, selection: [Column("name")])
+                XCTAssertEqual(statement.sql, "DELETE FROM \"persons\" RETURNING \"name\"")
+                XCTAssertEqual(statement.columnNames, ["name"])
+            }
+            do {
+                let request = Person.all()
+                let statement = try request.deleteAndFetchStatement(db, selection: [.allColumns])
+                XCTAssertEqual(statement.sql, "DELETE FROM \"persons\" RETURNING *")
+                XCTAssertEqual(statement.columnNames, ["id", "name", "email"])
+            }
+            do {
+                let request = Person.all()
+                let statement = try request.deleteAndFetchStatement(db, selection: [.allColumns(excluding: ["name"])])
+                XCTAssertEqual(statement.sql, "DELETE FROM \"persons\" RETURNING \"id\", \"email\"")
+                XCTAssertEqual(statement.columnNames, ["id", "email"])
+            }
         }
     }
     
     func testRequestDeleteAndFetchCursor() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -306,7 +320,7 @@ class TableRecordDeleteTests: GRDBTestCase {
     
     func testRequestDeleteAndFetchArray() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -334,7 +348,7 @@ class TableRecordDeleteTests: GRDBTestCase {
     
     func testRequestDeleteAndFetchSet() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -360,7 +374,7 @@ class TableRecordDeleteTests: GRDBTestCase {
     
     func testRequestDeleteAndFetchIds() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -443,7 +457,7 @@ class TableRecordDeleteTests: GRDBTestCase {
     
     func testJoinedRequestDeleteAndFetch() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -479,7 +493,7 @@ class TableRecordDeleteTests: GRDBTestCase {
             
             do {
                 let request = Player.including(required: Player.team)
-                let statement = try request.deleteAndFetchStatement(db, selection: [AllColumns()])
+                let statement = try request.deleteAndFetchStatement(db, selection: [.allColumns])
                 XCTAssertEqual(statement.sql, """
                     DELETE FROM "player" WHERE "id" IN (\
                     SELECT "player"."id" \
@@ -511,7 +525,7 @@ class TableRecordDeleteTests: GRDBTestCase {
             }
             do {
                 let request = Team.having(Team.players.isEmpty)
-                let statement = try request.deleteAndFetchStatement(db, selection: [AllColumns()])
+                let statement = try request.deleteAndFetchStatement(db, selection: [.allColumns])
                 XCTAssertEqual(statement.sql, """
                     DELETE FROM "team" WHERE "id" IN (\
                     SELECT "team"."id" \
@@ -610,7 +624,7 @@ class TableRecordDeleteTests: GRDBTestCase {
     
     func testGroupedRequestDeleteAndFetchCursor() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else

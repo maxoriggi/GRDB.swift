@@ -195,7 +195,7 @@ protocol DerivableRequest<RowDecoder>: AggregatingRequest, FilteredRequest,
 - `SelectionRequest` provides selection methods such as `select(selection)` or `annotated(with: selection)`
 - `TableRequest` provides table targeting methods such as `aliased(tableAlias)`
 
-DerivableRequest makes it possible to build reusable code snippets that apply to both requests and associations. You'll read more about it in the [Recommended Practices for Designing Record Types](https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/recordrecommendedpractices) and [Associations](AssociationsBasics.md).
+DerivableRequest makes it possible to build reusable code snippets that apply to both requests and associations. You'll read more about it in the [Recommended Practices for Designing Record Types](https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/recordrecommendedpractices) and [Associations](AssociationsBasics.md).
 
 ### FetchRequest
 
@@ -497,7 +497,7 @@ protocol SQLSelectable {
 SQLSelectable feeds the `select()` method of the query interface:
 
 ```swift
-Player.select(AllColumns())
+Player.select(.allColumns)
 Player.select(Column("name"), Column("score"))
 ```
 
@@ -505,7 +505,7 @@ All [SQLSpecificExpressible] values are selectable. Other selectable values are:
 
 ```swift
 // SELECT * FROM player
-Player.select(AllColumns())
+Player.select(.allColumns)
 
 // SELECT MAX(score) AS maxScore FROM player
 Player.select(max(Column("score")).forKey("maxScore"))
@@ -607,8 +607,8 @@ myRequest(Player.select(...).filter(...))
 [association aggregates]: AssociationsBasics.md#association-aggregates
 [Column]: #column
 [ColumnExpression]: #columnexpression
-[DatabaseRegionConvertible]: https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/databaseregionconvertible
-[DatabaseRegionObservation]: https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/databaseregionobservation
+[DatabaseRegionConvertible]: https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/databaseregionconvertible
+[DatabaseRegionObservation]: https://swiftpackageindex.com/groue/GRDB.swift/documentation/grdb/databaseregionobservation
 [DatabaseValue]: #databasevalue
 [DatabaseValueConvertible]: #databasevalueconvertible
 [DerivableRequest]: #derivablerequest

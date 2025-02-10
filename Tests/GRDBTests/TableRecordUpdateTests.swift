@@ -116,7 +116,7 @@ class TableRecordUpdateTests: GRDBTestCase {
     
     func testRequestUpdateAndFetchStatement() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -129,17 +129,33 @@ class TableRecordUpdateTests: GRDBTestCase {
             try Player.createTable(db)
             let assignment = Columns.score.set(to: 0)
             
-            let request = Player.all()
-            let statement = try request.updateAndFetchStatement(db, [assignment], selection: [AllColumns()])
-            XCTAssertEqual(statement.sql, "UPDATE \"player\" SET \"score\" = ? RETURNING *")
-            XCTAssertEqual(statement.arguments, [0])
-            XCTAssertEqual(statement.columnNames, ["id", "name", "score", "bonus"])
+            do {
+                let request = Player.all()
+                let statement = try request.updateAndFetchStatement(db, [assignment], selection: [Column("score")])
+                XCTAssertEqual(statement.sql, "UPDATE \"player\" SET \"score\" = ? RETURNING \"score\"")
+                XCTAssertEqual(statement.arguments, [0])
+                XCTAssertEqual(statement.columnNames, ["score"])
+            }
+            do {
+                let request = Player.all()
+                let statement = try request.updateAndFetchStatement(db, [assignment], selection: [.allColumns])
+                XCTAssertEqual(statement.sql, "UPDATE \"player\" SET \"score\" = ? RETURNING *")
+                XCTAssertEqual(statement.arguments, [0])
+                XCTAssertEqual(statement.columnNames, ["id", "name", "score", "bonus"])
+            }
+            do {
+                let request = Player.all()
+                let statement = try request.updateAndFetchStatement(db, [assignment], selection: [.allColumns(excluding: ["name"])])
+                XCTAssertEqual(statement.sql, "UPDATE \"player\" SET \"score\" = ? RETURNING \"id\", \"score\", \"bonus\"")
+                XCTAssertEqual(statement.arguments, [0])
+                XCTAssertEqual(statement.columnNames, ["id", "score", "bonus"])
+            }
         }
     }
     
     func testRequestUpdateAndFetchCursor() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -166,7 +182,7 @@ class TableRecordUpdateTests: GRDBTestCase {
     
     func testRequestUpdateAndFetchAll() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else
@@ -194,7 +210,7 @@ class TableRecordUpdateTests: GRDBTestCase {
     
     func testRequestUpdateAndFetchSet() throws {
 #if GRDBCUSTOMSQLITE || GRDBCIPHER
-        guard sqlite3_libversion_number() >= 3035000 else {
+        guard Database.sqliteLibVersionNumber >= 3035000 else {
             throw XCTSkip("RETURNING clause is not available")
         }
 #else

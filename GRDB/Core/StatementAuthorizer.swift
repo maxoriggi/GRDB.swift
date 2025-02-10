@@ -13,6 +13,8 @@ import string_h
 import Glibc
 #elseif os(macOS) || os(iOS) || os(watchOS) || os(tvOS) || os(visionOS)
 import Darwin
+#elseif os(Windows)
+import ucrt
 #endif
 
 /// `StatementAuthorizer` provides information about compiled database
@@ -38,6 +40,9 @@ final class StatementAuthorizer {
     /// Not nil if a statement is a BEGIN/COMMIT/ROLLBACK/RELEASE transaction or
     /// savepoint statement.
     var transactionEffect: Statement.TransactionEffect?
+    
+    /// If true, the statement executes is a `PRAGMA QUERY_ONLY` statement.
+    var isQueryOnlyPragma = false
     
     private var isDropStatement = false
     
@@ -65,6 +70,7 @@ final class StatementAuthorizer {
         databaseEventKinds = []
         invalidatesDatabaseSchemaCache = false
         transactionEffect = nil
+        isQueryOnlyPragma = false
         isDropStatement = false
     }
     
@@ -190,6 +196,11 @@ final class StatementAuthorizer {
             }
             return SQLITE_OK
             
+        case SQLITE_PRAGMA:
+            if let cString1 {
+                isQueryOnlyPragma = sqlite3_stricmp(cString1, "query_only") == 0
+            }
+            return SQLITE_OK
         default:
             return SQLITE_OK
         }
